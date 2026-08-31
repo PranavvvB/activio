@@ -7,7 +7,7 @@ from sqlalchemy import engine_from_config, pool
 
 from app.config import get_settings
 from app.db.base import Base
-from app.models import Activity, Availability, Match, User, UserActivity, UserProfile
+from app.models import Activity, Availability, Connection, Match, Message, User, UserActivity, UserProfile
 
 config = context.config
 

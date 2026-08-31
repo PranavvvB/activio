@@ -32,7 +32,15 @@ def test_activity_association_and_availability(client, db_session):
     assert client.get("/api/users/me/availability", headers=headers).json()[0]["day_of_week"] == "wednesday"
 
 
-def test_ai_parse_requires_configuration(client):
+def test_ai_parse_requires_configuration(client, monkeypatch):
+    from app.config import Settings
+    from app.services import ai_service
+
+    monkeypatch.setattr(
+        ai_service,
+        "get_settings",
+        lambda: Settings(gemini_api_key=None),
+    )
     headers = auth(client)
     response = client.post("/api/ai/parse-profile", headers=headers, json={"description": "I play tennis"})
     assert response.status_code == 503

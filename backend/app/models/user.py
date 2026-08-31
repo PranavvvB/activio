@@ -1,11 +1,20 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.availability import Availability
+    from app.models.connection import Connection
+    from app.models.match import Match
+    from app.models.message import Message
+    from app.models.user_activity import UserActivity
+    from app.models.user_profile import UserProfile
 
 
 class User(Base):
@@ -50,4 +59,13 @@ class User(Base):
         foreign_keys="Match.matched_user_id",
         back_populates="matched_user",
         cascade="all, delete-orphan",
+    )
+    connections_sent: Mapped[list[Connection]] = relationship(
+        foreign_keys="Connection.requester_id", back_populates="requester", cascade="all, delete-orphan"
+    )
+    connections_received: Mapped[list[Connection]] = relationship(
+        foreign_keys="Connection.recipient_id", back_populates="recipient", cascade="all, delete-orphan"
+    )
+    messages_sent: Mapped[list[Message]] = relationship(
+        back_populates="sender", cascade="all, delete-orphan"
     )

@@ -6,6 +6,7 @@ from app.api.routes.users import router as users_router
 from app.api.routes.ai import router as ai_router
 from app.api.routes.activities import router as activities_router
 from app.api.routes.matches import router as matches_router
+from app.api.routes.connections import router as connections_router
 from app.config import get_settings
 
 
@@ -23,6 +24,7 @@ def create_app() -> FastAPI:
     app.include_router(ai_router)
     app.include_router(activities_router)
     app.include_router(matches_router)
+    app.include_router(connections_router)
 
     @app.get("/")
     async def root() -> dict[str, str]:

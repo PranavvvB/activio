@@ -25,9 +25,13 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "change-me-in-development-secret-key-12345"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
-    llm_api_key: str | None = None
-    llm_api_url: str = "https://api.openai.com/v1/chat/completions"
-    llm_model: str = "gpt-4o-mini"
+    # Google AI Studio configuration. The key is only read by the backend.
+    gemini_api_key: str | None = None
+    gemini_api_url: str = (
+        "https://generativelanguage.googleapis.com/v1beta/models/"
+        "{model}:generateContent"
+    )
+    gemini_model: str = "gemini-3.6-flash"
 
     @property
     def sqlalchemy_database_url(self) -> str:
