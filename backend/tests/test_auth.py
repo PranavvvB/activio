@@ -42,6 +42,19 @@ def test_login_user_success(client, db_session) -> None:
     assert len(data["access_token"]) > 0
 
 
+def test_api_allows_frontend_origin(client) -> None:
+    response = client.options(
+        "/api/auth/register",
+        headers={
+            "Origin": "http://localhost:3000",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+
+
 def test_authentication_failure_requires_token(client) -> None:
     response = client.get("/api/users/me")
 

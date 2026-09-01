@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "change-me-in-development-secret-key-12345"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     # Google AI Studio configuration. The key is only read by the backend.
     gemini_api_key: str | None = None
     gemini_api_url: str = (
