@@ -15,8 +15,12 @@ class UserActivity(Base):
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    activity_id: Mapped[int] = mapped_column(ForeignKey("activities.id"), nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), nullable=False, index=True
+    )
+    activity_id: Mapped[int] = mapped_column(
+        ForeignKey("activities.id"), nullable=False, index=True
+    )
     skill_level: Mapped[str] = mapped_column(String(50), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

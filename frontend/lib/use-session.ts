@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AUTH_CHANGE_EVENT } from "./auth-storage";
 import { getSessionState, type SessionState } from "./session";
 
 export function useSession() {
@@ -8,11 +9,17 @@ export function useSession() {
 
   useEffect(() => {
     let active = true;
-    getSessionState().then((next) => {
-      if (active) setState(next);
-    });
+
+    const refresh = () =>
+      getSessionState().then((next) => {
+        if (active) setState(next);
+      });
+
+    refresh();
+    window.addEventListener(AUTH_CHANGE_EVENT, refresh);
     return () => {
       active = false;
+      window.removeEventListener(AUTH_CHANGE_EVENT, refresh);
     };
   }, []);
 

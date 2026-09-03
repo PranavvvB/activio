@@ -31,13 +31,17 @@ def create_access_token(subject: str, expires_delta: timedelta | None = None) ->
 
     exp = datetime.now(timezone.utc) + expires_delta
     payload = {"sub": subject, "exp": exp}
-    return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
+    return jwt.encode(
+        payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm
+    )
 
 
 def decode_access_token(token: str) -> str:
     settings = get_settings()
     try:
-        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
+        payload = jwt.decode(
+            token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
+        )
     except jwt.PyJWTError as exc:  # pragma: no cover - defensive branch
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

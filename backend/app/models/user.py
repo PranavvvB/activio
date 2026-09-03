@@ -21,8 +21,12 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
-    username: Mapped[str] = mapped_column(String(80), unique=True, index=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(255), unique=True, index=True, nullable=False
+    )
+    username: Mapped[str] = mapped_column(
+        String(80), unique=True, index=True, nullable=False
+    )
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
@@ -61,10 +65,14 @@ class User(Base):
         cascade="all, delete-orphan",
     )
     connections_sent: Mapped[list[Connection]] = relationship(
-        foreign_keys="Connection.requester_id", back_populates="requester", cascade="all, delete-orphan"
+        foreign_keys="Connection.requester_id",
+        back_populates="requester",
+        cascade="all, delete-orphan",
     )
     connections_received: Mapped[list[Connection]] = relationship(
-        foreign_keys="Connection.recipient_id", back_populates="recipient", cascade="all, delete-orphan"
+        foreign_keys="Connection.recipient_id",
+        back_populates="recipient",
+        cascade="all, delete-orphan",
     )
     messages_sent: Mapped[list[Message]] = relationship(
         back_populates="sender", cascade="all, delete-orphan"

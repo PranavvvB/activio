@@ -9,7 +9,11 @@ from app.services import ai_service
 def auth(client) -> dict[str, str]:
     client.post(
         "/api/auth/register",
-        json={"email": "gemini@example.com", "username": "geminiuser", "password": "secret123"},
+        json={
+            "email": "gemini@example.com",
+            "username": "geminiuser",
+            "password": "secret123",
+        },
     )
     token = client.post(
         "/api/auth/login",
@@ -42,8 +46,16 @@ def test_gemini_parse_success(client, monkeypatch):
                                 {
                                     "text": json.dumps(
                                         {
-                                            "activities": [{"name": "tennis", "skill_level": "intermediate"}],
-                                            "availability": {"days": ["wednesday"], "start_time": "18:00"},
+                                            "activities": [
+                                                {
+                                                    "name": "tennis",
+                                                    "skill_level": "intermediate",
+                                                }
+                                            ],
+                                            "availability": {
+                                                "days": ["wednesday"],
+                                                "start_time": "18:00",
+                                            },
                                             "intensity": "competitive",
                                             "max_distance_km": 10,
                                             "social_preferences": [],
@@ -96,7 +108,9 @@ def test_gemini_provider_error(client, monkeypatch):
         ai_service.httpx,
         "post",
         lambda *args, **kwargs: httpx.Response(
-            429, request=httpx.Request("POST", args[0]), json={"error": {"message": "quota"}}
+            429,
+            request=httpx.Request("POST", args[0]),
+            json={"error": {"message": "quota"}},
         ),
     )
 

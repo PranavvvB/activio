@@ -7,7 +7,9 @@ from app.db.base import Base
 settings = get_settings()
 
 engine = create_engine(settings.sqlalchemy_database_url, pool_pre_ping=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=False)
+SessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine, expire_on_commit=False
+)
 
 
 def create_db_tables() -> None:

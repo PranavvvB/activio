@@ -13,7 +13,9 @@ def get_or_create_profile(db: Session, user: User) -> UserProfile:
     return user.profile
 
 
-def update_profile(db: Session, user: User, profile_in: UserProfileUpdate) -> UserProfile:
+def update_profile(
+    db: Session, user: User, profile_in: UserProfileUpdate
+) -> UserProfile:
     profile = get_or_create_profile(db, user)
     for field, value in profile_in.model_dump(exclude_unset=True).items():
         setattr(profile, field, value)

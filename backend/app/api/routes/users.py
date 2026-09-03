@@ -5,8 +5,13 @@ from app.core.security import get_current_user
 from app.deps import get_db
 from app.models.user import User
 from app.schemas.profile import (
-    ActivityRead, AvailabilityEntry, AvailabilityRead, UserActivityCreate, UserActivityRead,
-    UserProfileRead, UserProfileUpdate,
+    ActivityRead,
+    AvailabilityEntry,
+    AvailabilityRead,
+    UserActivityCreate,
+    UserActivityRead,
+    UserProfileRead,
+    UserProfileUpdate,
 )
 from app.schemas.user import UserRead, UserUpdate
 from app.models.activity import Activity
@@ -37,11 +42,15 @@ def update_current_user(
 
 
 @router.get("/me/profile", response_model=UserProfileRead)
-def read_current_profile(current_user: User = Depends(get_current_user)) -> UserProfileRead:
+def read_current_profile(
+    current_user: User = Depends(get_current_user),
+) -> UserProfileRead:
     if current_user.profile is None:
         from fastapi import HTTPException, status
 
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
+        )
     return UserProfileRead.model_validate(current_user.profile)
 
 
@@ -61,11 +70,17 @@ def list_activities(db: Session = Depends(get_db)) -> list[Activity]:
 
 
 @router.get("/me/activities", response_model=list[UserActivityRead])
-def list_my_activities(current_user: User = Depends(get_current_user)) -> list[UserActivity]:
+def list_my_activities(
+    current_user: User = Depends(get_current_user),
+) -> list[UserActivity]:
     return current_user.activities
 
 
-@router.post("/me/activities", response_model=UserActivityRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/me/activities",
+    response_model=UserActivityRead,
+    status_code=status.HTTP_201_CREATED,
+)
 def add_my_activity(
     activity_in: UserActivityCreate,
     current_user: User = Depends(get_current_user),
@@ -89,7 +104,11 @@ def remove_my_activity(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> None:
-    association = db.query(UserActivity).filter_by(user_id=current_user.id, activity_id=activity_id).first()
+    association = (
+        db.query(UserActivity)
+        .filter_by(user_id=current_user.id, activity_id=activity_id)
+        .first()
+    )
     if association is None:
         raise HTTPException(status_code=404, detail="Activity association not found")
     db.delete(association)
@@ -104,10 +123,14 @@ def update_my_activity(
     db: Session = Depends(get_db),
 ) -> UserActivity:
     if activity_in.activity_id != activity_id:
-        raise HTTPException(status_code=422, detail="Path activity_id must match payload")
-    association = db.query(UserActivity).filter_by(
-        user_id=current_user.id, activity_id=activity_id
-    ).first()
+        raise HTTPException(
+            status_code=422, detail="Path activity_id must match payload"
+        )
+    association = (
+        db.query(UserActivity)
+        .filter_by(user_id=current_user.id, activity_id=activity_id)
+        .first()
+    )
     if association is None:
         raise HTTPException(status_code=404, detail="Activity association not found")
     association.skill_level = activity_in.skill_level
@@ -117,7 +140,9 @@ def update_my_activity(
 
 
 @router.get("/me/availability", response_model=list[AvailabilityRead])
-def read_my_availability(current_user: User = Depends(get_current_user)) -> list[Availability]:
+def read_my_availability(
+    current_user: User = Depends(get_current_user),
+) -> list[Availability]:
     return current_user.availability
 
 
@@ -128,9 +153,13 @@ def update_my_availability(
     db: Session = Depends(get_db),
 ) -> list[Availability]:
     if any(entry.start_time >= entry.end_time for entry in entries):
-        raise HTTPException(status_code=422, detail="Availability start_time must be before end_time")
+        raise HTTPException(
+            status_code=422, detail="Availability start_time must be before end_time"
+        )
     current_user.availability.clear()
-    current_user.availability.extend(Availability(user_id=current_user.id, **entry.model_dump()) for entry in entries)
+    current_user.availability.extend(
+        Availability(user_id=current_user.id, **entry.model_dump()) for entry in entries
+    )
     db.commit()
     db.refresh(current_user)
     return current_user.availability

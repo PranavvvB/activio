@@ -16,6 +16,8 @@ def parse_profile(
     try:
         return parse_profile_description(request.description)
     except AIProviderError as exc:
-        raise HTTPException(status_code=502, detail="Unable to parse profile description") from exc
+        raise HTTPException(
+            status_code=502, detail="Unable to parse profile description"
+        ) from exc
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc

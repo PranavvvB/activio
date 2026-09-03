@@ -32,14 +32,24 @@ def upgrade() -> None:
             server_default=sa.text("CURRENT_TIMESTAMP"),
             nullable=False,
         ),
-        sa.ForeignKeyConstraint(["activity_id"], ["activities.id"], name="fk_matches_activity_id_activities"),
-        sa.ForeignKeyConstraint(["matched_user_id"], ["users.id"], name="fk_matches_matched_user_id_users"),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], name="fk_matches_user_id_users"),
+        sa.ForeignKeyConstraint(
+            ["activity_id"], ["activities.id"], name="fk_matches_activity_id_activities"
+        ),
+        sa.ForeignKeyConstraint(
+            ["matched_user_id"], ["users.id"], name="fk_matches_matched_user_id_users"
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"], ["users.id"], name="fk_matches_user_id_users"
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_matches_activity_id"), "matches", ["activity_id"], unique=False)
+    op.create_index(
+        op.f("ix_matches_activity_id"), "matches", ["activity_id"], unique=False
+    )
     op.create_index(op.f("ix_matches_id"), "matches", ["id"], unique=False)
-    op.create_index(op.f("ix_matches_matched_user_id"), "matches", ["matched_user_id"], unique=False)
+    op.create_index(
+        op.f("ix_matches_matched_user_id"), "matches", ["matched_user_id"], unique=False
+    )
     op.create_index(op.f("ix_matches_user_id"), "matches", ["user_id"], unique=False)
 
 

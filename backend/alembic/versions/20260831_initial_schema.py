@@ -1,7 +1,7 @@
 """Initial schema
 
 Revision ID: 20260831_initial_schema
-Revises: 
+Revises:
 Create Date: 2026-08-31 21:50:00.000000
 
 """
@@ -71,12 +71,16 @@ def upgrade() -> None:
             server_default=sa.text("CURRENT_TIMESTAMP"),
             nullable=False,
         ),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], name="fk_user_profiles_user_id_users"),
+        sa.ForeignKeyConstraint(
+            ["user_id"], ["users.id"], name="fk_user_profiles_user_id_users"
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("user_id", name="uq_user_profiles_user_id"),
     )
     op.create_index(op.f("ix_user_profiles_id"), "user_profiles", ["id"], unique=False)
-    op.create_index(op.f("ix_user_profiles_user_id"), "user_profiles", ["user_id"], unique=True)
+    op.create_index(
+        op.f("ix_user_profiles_user_id"), "user_profiles", ["user_id"], unique=True
+    )
 
     op.create_table(
         "activities",
@@ -107,14 +111,29 @@ def upgrade() -> None:
             server_default=sa.text("CURRENT_TIMESTAMP"),
             nullable=False,
         ),
-        sa.ForeignKeyConstraint(["activity_id"], ["activities.id"], name="fk_user_activities_activity_id_activities"),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], name="fk_user_activities_user_id_users"),
+        sa.ForeignKeyConstraint(
+            ["activity_id"],
+            ["activities.id"],
+            name="fk_user_activities_activity_id_activities",
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"], ["users.id"], name="fk_user_activities_user_id_users"
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("user_id", "activity_id", name="uq_user_activity"),
     )
-    op.create_index(op.f("ix_user_activities_activity_id"), "user_activities", ["activity_id"], unique=False)
-    op.create_index(op.f("ix_user_activities_id"), "user_activities", ["id"], unique=False)
-    op.create_index(op.f("ix_user_activities_user_id"), "user_activities", ["user_id"], unique=False)
+    op.create_index(
+        op.f("ix_user_activities_activity_id"),
+        "user_activities",
+        ["activity_id"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_user_activities_id"), "user_activities", ["id"], unique=False
+    )
+    op.create_index(
+        op.f("ix_user_activities_user_id"), "user_activities", ["user_id"], unique=False
+    )
 
     op.create_table(
         "availability",
@@ -130,11 +149,15 @@ def upgrade() -> None:
             server_default=sa.text("CURRENT_TIMESTAMP"),
             nullable=False,
         ),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], name="fk_availability_user_id_users"),
+        sa.ForeignKeyConstraint(
+            ["user_id"], ["users.id"], name="fk_availability_user_id_users"
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_availability_id"), "availability", ["id"], unique=False)
-    op.create_index(op.f("ix_availability_user_id"), "availability", ["user_id"], unique=False)
+    op.create_index(
+        op.f("ix_availability_user_id"), "availability", ["user_id"], unique=False
+    )
 
 
 def downgrade() -> None:

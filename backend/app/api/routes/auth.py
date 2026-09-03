@@ -17,7 +17,9 @@ def register_user_route(user_in: UserCreate, db: Session = Depends(get_db)) -> U
 
 
 @router.post("/login", response_model=TokenResponse)
-def login_user_route(user_in: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse:
+def login_user_route(
+    user_in: LoginRequest, db: Session = Depends(get_db)
+) -> TokenResponse:
     user = authenticate_user(db, user_in.email, user_in.password)
     token = create_access_token(user.email)
     return TokenResponse(access_token=token, token_type="bearer")

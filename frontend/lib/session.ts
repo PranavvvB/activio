@@ -1,4 +1,9 @@
-import { api, type Availability, type User, type UserActivity } from "./api-service";
+import {
+  api,
+  type Availability,
+  type User,
+  type UserActivity,
+} from "./api-service";
 import { ApiError } from "./api-client";
 import { authStorage } from "./auth-storage";
 

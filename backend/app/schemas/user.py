@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr
 
 from app.schemas.profile import UserProfileRead
 
+
 class UserCreate(BaseModel):
     email: EmailStr
     username: str

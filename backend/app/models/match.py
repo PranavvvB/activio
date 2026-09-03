@@ -12,9 +12,15 @@ class Match(Base):
     __tablename__ = "matches"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    matched_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    activity_id: Mapped[int | None] = mapped_column(ForeignKey("activities.id"), nullable=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), nullable=False, index=True
+    )
+    matched_user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), nullable=False, index=True
+    )
+    activity_id: Mapped[int | None] = mapped_column(
+        ForeignKey("activities.id"), nullable=True, index=True
+    )
     score: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     explanation: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     created_at: Mapped[datetime] = mapped_column(

@@ -1,3 +1,88 @@
 "use client";
-import { useEffect,useState } from "react"; import Link from "next/link"; import { AccountShell } from "../../components/account-shell"; import { api,Connection } from "../../lib/api-service"; import { ApiError } from "../../lib/api-client";
-export default function Connections(){const [items,setItems]=useState<Connection[]>([]);const [error,setError]=useState("");useEffect(()=>{api.connections().then(setItems).catch(e=>setError(e instanceof ApiError?e.message:"Unable to load connections."));},[]);const act=(id:number,accept:boolean)=> (accept?api.accept(id):api.reject(id)).then(x=>setItems(items.map(c=>c.id===id?x:c))).catch(e=>setError(e instanceof ApiError?e.message:"Could not update request."));return <AccountShell title="Connections"><div className="mt-8 space-y-4">{error&&<p role="alert" className="rounded-xl bg-red-50 p-3 text-red-700">{error}</p>}{!items.length&&!error&&<p className="rounded-3xl bg-white p-7 text-ink/60">No connections yet. Find a match to start meeting your people.</p>}{items.map(c=><article key={c.id} className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-white p-5 shadow-sm"><div><h2 className="font-display text-lg font-extrabold">Member #{c.requester_id===c.recipient_id?c.recipient_id:c.requester_id}</h2><p className="text-sm capitalize text-ink/55">{c.status} connection</p></div><div>{c.status==="pending"&&<><button onClick={()=>act(c.id,true)} className="mr-2 rounded-full bg-coral-500 px-4 py-2 text-sm font-bold text-white">Accept</button><button onClick={()=>act(c.id,false)} className="rounded-full bg-indigo-50 px-4 py-2 text-sm font-bold text-indigo-600">Decline</button></>}{c.status==="accepted"&&<Link href={`/messages/${c.id}`} className="rounded-full bg-indigo-50 px-4 py-2 text-sm font-bold text-indigo-600">Message</Link>}</div></article>)}</div></AccountShell>}
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { AccountShell } from "../../components/account-shell";
+import { api, Connection } from "../../lib/api-service";
+import { ApiError } from "../../lib/api-client";
+export default function Connections() {
+  const [items, setItems] = useState<Connection[]>([]);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    api
+      .connections()
+      .then(setItems)
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? e.message : "Unable to load connections.",
+        ),
+      );
+  }, []);
+  const act = (id: number, accept: boolean) =>
+    (accept ? api.accept(id) : api.reject(id))
+      .then((x) => setItems(items.map((c) => (c.id === id ? x : c))))
+      .catch((e) =>
+        setError(
+          e instanceof ApiError ? e.message : "Could not update request.",
+        ),
+      );
+  return (
+    <AccountShell title="Connections">
+      <div className="mt-8 space-y-4">
+        {error && (
+          <p role="alert" className="rounded-xl bg-red-50 p-3 text-red-700">
+            {error}
+          </p>
+        )}
+        {!items.length && !error && (
+          <p className="rounded-3xl bg-white p-7 text-ink/60">
+            No connections yet. Find a match to start meeting your people.
+          </p>
+        )}
+        {items.map((c) => (
+          <article
+            key={c.id}
+            className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-white p-5 shadow-sm"
+          >
+            <div>
+              <h2 className="font-display text-lg font-extrabold">
+                Member #
+                {c.requester_id === c.recipient_id
+                  ? c.recipient_id
+                  : c.requester_id}
+              </h2>
+              <p className="text-sm capitalize text-ink/55">
+                {c.status} connection
+              </p>
+            </div>
+            <div>
+              {c.status === "pending" && (
+                <>
+                  <button
+                    onClick={() => act(c.id, true)}
+                    className="mr-2 rounded-full bg-coral-500 px-4 py-2 text-sm font-bold text-white"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => act(c.id, false)}
+                    className="rounded-full bg-indigo-50 px-4 py-2 text-sm font-bold text-indigo-600"
+                  >
+                    Decline
+                  </button>
+                </>
+              )}
+              {c.status === "accepted" && (
+                <Link
+                  href={`/messages/${c.id}`}
+                  className="rounded-full bg-indigo-50 px-4 py-2 text-sm font-bold text-indigo-600"
+                >
+                  Message
+                </Link>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </AccountShell>
+  );
+}

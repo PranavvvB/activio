@@ -66,7 +66,9 @@ class MatchingWeights:
             "intensity_social": cls.intensity_social,
         }
         if values is not None:
-            defaults.update({key: value for key, value in values.items() if value is not None})
+            defaults.update(
+                {key: value for key, value in values.items() if value is not None}
+            )
         return cls(**defaults)
 
     def as_map(self) -> dict[str, float]:
@@ -96,16 +98,30 @@ def calculate_profile_match(
     profile_b: Any,
     weights: Mapping[str, float] | MatchingWeights | None = None,
 ) -> CompatibilityResult:
-    weight_config = weights if isinstance(weights, MatchingWeights) else MatchingWeights.from_mapping(weights)
+    weight_config = (
+        weights
+        if isinstance(weights, MatchingWeights)
+        else MatchingWeights.from_mapping(weights)
+    )
     profile_a_data = _to_mapping(profile_a)
     profile_b_data = _to_mapping(profile_b)
 
     shared_activities = sorted(_shared_activity_names(profile_a_data, profile_b_data))
-    activity_score, activity_reason = _score_activity_compatibility(profile_a_data, profile_b_data, shared_activities)
-    skill_score, skill_reason = _score_skill_compatibility(profile_a_data, profile_b_data, shared_activities)
-    availability_score, availability_reason = _score_availability_overlap(profile_a_data, profile_b_data)
-    distance_score, location_reason = _score_location_proximity(profile_a_data, profile_b_data)
-    intensity_score, intensity_reason = _score_intensity_and_social(profile_a_data, profile_b_data, shared_activities)
+    activity_score, activity_reason = _score_activity_compatibility(
+        profile_a_data, profile_b_data, shared_activities
+    )
+    skill_score, skill_reason = _score_skill_compatibility(
+        profile_a_data, profile_b_data, shared_activities
+    )
+    availability_score, availability_reason = _score_availability_overlap(
+        profile_a_data, profile_b_data
+    )
+    distance_score, location_reason = _score_location_proximity(
+        profile_a_data, profile_b_data
+    )
+    intensity_score, intensity_reason = _score_intensity_and_social(
+        profile_a_data, profile_b_data, shared_activities
+    )
 
     component_scores = {
         "activity": activity_score,
@@ -139,7 +155,9 @@ def calculate_profile_match(
 
     return CompatibilityResult(
         overall_score=round(overall_score, 2),
-        component_scores={key: round(value, 2) for key, value in component_scores.items()},
+        component_scores={
+            key: round(value, 2) for key, value in component_scores.items()
+        },
         reasons=reasons,
         shared_activities=shared_activities,
         weights=weight_config,
@@ -170,7 +188,9 @@ def _normalize_name(value: Any) -> str:
     return str(value or "").strip().lower()
 
 
-def _shared_activity_names(profile_a: Mapping[str, Any], profile_b: Mapping[str, Any]) -> set[str]:
+def _shared_activity_names(
+    profile_a: Mapping[str, Any], profile_b: Mapping[str, Any]
+) -> set[str]:
     activities_a = _collect_activity_names(profile_a)
     activities_b = _collect_activity_names(profile_b)
     return activities_a.intersection(activities_b)
@@ -196,7 +216,9 @@ def _extract_activity_name(activity: Any) -> str:
     return ""
 
 
-def _extract_activity_meta(profile: Mapping[str, Any], activity_name: str) -> dict[str, Any]:
+def _extract_activity_meta(
+    profile: Mapping[str, Any], activity_name: str
+) -> dict[str, Any]:
     for entry in _as_list(profile.get("activities")):
         if isinstance(entry, Mapping):
             candidate = _normalize_name(entry.get("name") or entry.get("activity"))
@@ -215,13 +237,18 @@ def _score_activity_compatibility(
     if not shared_activities:
         return 0.0, "No shared activities, so there is no activity overlap to score."
 
-    union_count = len(_collect_activity_names(profile_a).union(_collect_activity_names(profile_b)))
+    union_count = len(
+        _collect_activity_names(profile_a).union(_collect_activity_names(profile_b))
+    )
     if union_count == 0:
         return 0.0, "No activities were provided for either user."
 
     activity_score = (len(shared_activities) / union_count) * 100.0
     activity_label = ", ".join(shared_activities)
-    return round(activity_score, 2), f"Shared activities: {activity_label}; activity overlap is {round(activity_score, 1)}%."
+    return (
+        round(activity_score, 2),
+        f"Shared activities: {activity_label}; activity overlap is {round(activity_score, 1)}%.",
+    )
 
 
 def _score_skill_compatibility(
@@ -230,19 +257,28 @@ def _score_skill_compatibility(
     shared_activities: Sequence[str],
 ) -> tuple[float, str]:
     if not shared_activities:
-        return 0.0, "Skill compatibility could not be assessed because there are no shared activities."
+        return (
+            0.0,
+            "Skill compatibility could not be assessed because there are no shared activities.",
+        )
 
     scores: list[float] = []
     descriptions: list[str] = []
     for activity_name in shared_activities:
         meta_a = _extract_activity_meta(profile_a, activity_name)
         meta_b = _extract_activity_meta(profile_b, activity_name)
-        level_a = _coerce_skill(meta_a.get("skill_level") or meta_a.get("skill") or meta_a.get("level"))
-        level_b = _coerce_skill(meta_b.get("skill_level") or meta_b.get("skill") or meta_b.get("level"))
+        level_a = _coerce_skill(
+            meta_a.get("skill_level") or meta_a.get("skill") or meta_a.get("level")
+        )
+        level_b = _coerce_skill(
+            meta_b.get("skill_level") or meta_b.get("skill") or meta_b.get("level")
+        )
 
         if level_a is None or level_b is None:
             scores.append(50.0)
-            descriptions.append(f"{activity_name} skill level information is incomplete.")
+            descriptions.append(
+                f"{activity_name} skill level information is incomplete."
+            )
             continue
 
         difference = abs(level_a - level_b)
@@ -251,14 +287,21 @@ def _score_skill_compatibility(
         descriptions.append(f"{activity_name}: {level_a} vs {level_b} skill level.")
 
     average_score = sum(scores) / len(scores) if scores else 0.0
-    return round(average_score, 2), "Skill compatibility: " + "; ".join(descriptions) + f" (average {round(average_score, 1)}%)."
+    return round(average_score, 2), "Skill compatibility: " + "; ".join(
+        descriptions
+    ) + f" (average {round(average_score, 1)}%)."
 
 
-def _score_availability_overlap(profile_a: Mapping[str, Any], profile_b: Mapping[str, Any]) -> tuple[float, str]:
+def _score_availability_overlap(
+    profile_a: Mapping[str, Any], profile_b: Mapping[str, Any]
+) -> tuple[float, str]:
     slots_a = _extract_availability_slots(profile_a)
     slots_b = _extract_availability_slots(profile_b)
     if not slots_a or not slots_b:
-        return 100.0, "Availability details are missing, so this component is treated as neutral."
+        return (
+            100.0,
+            "Availability details are missing, so this component is treated as neutral.",
+        )
 
     overlap_minutes = 0
     for day, start_a, end_a in slots_a:
@@ -275,17 +318,32 @@ def _score_availability_overlap(profile_a: Mapping[str, Any], profile_b: Mapping
 
     if score <= 0:
         return 0.0, "There is no overlapping availability window between the two users."
-    return round(score, 2), f"Availability overlap yields {round(score, 1)}% compatibility."
+    return round(
+        score, 2
+    ), f"Availability overlap yields {round(score, 1)}% compatibility."
 
 
-def _score_location_proximity(profile_a: Mapping[str, Any], profile_b: Mapping[str, Any]) -> tuple[float, str]:
-    lat_a = _coerce_float(_get_nested(profile_a, "location.latitude") or profile_a.get("latitude"))
-    lon_a = _coerce_float(_get_nested(profile_a, "location.longitude") or profile_a.get("longitude"))
-    lat_b = _coerce_float(_get_nested(profile_b, "location.latitude") or profile_b.get("latitude"))
-    lon_b = _coerce_float(_get_nested(profile_b, "location.longitude") or profile_b.get("longitude"))
+def _score_location_proximity(
+    profile_a: Mapping[str, Any], profile_b: Mapping[str, Any]
+) -> tuple[float, str]:
+    lat_a = _coerce_float(
+        _get_nested(profile_a, "location.latitude") or profile_a.get("latitude")
+    )
+    lon_a = _coerce_float(
+        _get_nested(profile_a, "location.longitude") or profile_a.get("longitude")
+    )
+    lat_b = _coerce_float(
+        _get_nested(profile_b, "location.latitude") or profile_b.get("latitude")
+    )
+    lon_b = _coerce_float(
+        _get_nested(profile_b, "location.longitude") or profile_b.get("longitude")
+    )
 
     if lat_a is None or lat_b is None or lon_a is None or lon_b is None:
-        return 100.0, "Location data is missing, so the proximity component is treated as neutral."
+        return (
+            100.0,
+            "Location data is missing, so the proximity component is treated as neutral.",
+        )
 
     distance_km = _haversine_km(lat_a, lon_a, lat_b, lon_b)
     if distance_km <= 2:
@@ -302,8 +360,14 @@ def _score_location_proximity(profile_a: Mapping[str, Any], profile_b: Mapping[s
         score = 0.0
 
     if score <= 0:
-        return 0.0, f"Users are about {round(distance_km, 1)} km apart, which is outside the preferred area."
-    return round(score, 2), f"Users are about {round(distance_km, 1)} km apart, giving a location score of {round(score, 1)}%."
+        return (
+            0.0,
+            f"Users are about {round(distance_km, 1)} km apart, which is outside the preferred area.",
+        )
+    return (
+        round(score, 2),
+        f"Users are about {round(distance_km, 1)} km apart, giving a location score of {round(score, 1)}%.",
+    )
 
 
 def _score_intensity_and_social(
@@ -311,16 +375,35 @@ def _score_intensity_and_social(
     profile_b: Mapping[str, Any],
     shared_activities: Sequence[str],
 ) -> tuple[float, str]:
-    intensity_a = _normalize_name(_first_non_empty(profile_a.get("intensity"), profile_a.get("preferred_intensity")))
-    intensity_b = _normalize_name(_first_non_empty(profile_b.get("intensity"), profile_b.get("preferred_intensity")))
+    intensity_a = _normalize_name(
+        _first_non_empty(
+            profile_a.get("intensity"), profile_a.get("preferred_intensity")
+        )
+    )
+    intensity_b = _normalize_name(
+        _first_non_empty(
+            profile_b.get("intensity"), profile_b.get("preferred_intensity")
+        )
+    )
 
     social_a = _normalize_preferences(profile_a.get("social_preferences"))
     social_b = _normalize_preferences(profile_b.get("social_preferences"))
 
-    if not shared_activities and not intensity_a and not intensity_b and not social_a and not social_b:
-        return 100.0, "No intensity or social preference data was provided, so this component is neutral."
+    if (
+        not shared_activities
+        and not intensity_a
+        and not intensity_b
+        and not social_a
+        and not social_b
+    ):
+        return (
+            100.0,
+            "No intensity or social preference data was provided, so this component is neutral.",
+        )
 
-    intensity_score = _compare_scalar_preferences(intensity_a, intensity_b, INTENSITY_LEVELS)
+    intensity_score = _compare_scalar_preferences(
+        intensity_a, intensity_b, INTENSITY_LEVELS
+    )
     social_score = _compare_social_preferences(social_a, social_b)
 
     if not shared_activities:
@@ -333,18 +416,33 @@ def _score_intensity_and_social(
     for activity in shared_activities:
         meta_a = _extract_activity_meta(profile_a, activity)
         meta_b = _extract_activity_meta(profile_b, activity)
-        a_pref = _normalize_name(meta_a.get("intensity") or meta_a.get("preferred_intensity"))
-        b_pref = _normalize_name(meta_b.get("intensity") or meta_b.get("preferred_intensity"))
+        a_pref = _normalize_name(
+            meta_a.get("intensity") or meta_a.get("preferred_intensity")
+        )
+        b_pref = _normalize_name(
+            meta_b.get("intensity") or meta_b.get("preferred_intensity")
+        )
         activity_score = _compare_scalar_preferences(a_pref, b_pref, INTENSITY_LEVELS)
-        activity_social_a = _normalize_preferences(meta_a.get("social_preferences") or meta_a.get("social"))
-        activity_social_b = _normalize_preferences(meta_b.get("social_preferences") or meta_b.get("social"))
+        activity_social_a = _normalize_preferences(
+            meta_a.get("social_preferences") or meta_a.get("social")
+        )
+        activity_social_b = _normalize_preferences(
+            meta_b.get("social_preferences") or meta_b.get("social")
+        )
         social_match = _compare_social_preferences(activity_social_a, activity_social_b)
         activity_scores.append((activity_score + social_match) / 2.0)
 
-    combined_score = (intensity_score + social_score + sum(activity_scores)) / (2 + len(activity_scores))
+    combined_score = (intensity_score + social_score + sum(activity_scores)) / (
+        2 + len(activity_scores)
+    )
     if combined_score <= 0:
-        return 0.0, "The shared activities and preference profile are strongly misaligned."
-    return round(combined_score, 2), f"Intensity and social preferences score {round(combined_score, 1)}%."
+        return (
+            0.0,
+            "The shared activities and preference profile are strongly misaligned.",
+        )
+    return round(
+        combined_score, 2
+    ), f"Intensity and social preferences score {round(combined_score, 1)}%."
 
 
 def _get_nested(profile: Mapping[str, Any], dotted_path: str) -> Any:
@@ -397,7 +495,9 @@ def _normalize_preferences(value: Any) -> set[str]:
     return {str(value).strip().lower()}
 
 
-def _compare_scalar_preferences(a_value: str, b_value: str, lookup: Mapping[str, int]) -> float:
+def _compare_scalar_preferences(
+    a_value: str, b_value: str, lookup: Mapping[str, int]
+) -> float:
     if not a_value and not b_value:
         return 100.0
     if not a_value or not b_value:
@@ -410,7 +510,9 @@ def _compare_scalar_preferences(a_value: str, b_value: str, lookup: Mapping[str,
     return similarity * 100.0
 
 
-def _compare_social_preferences(a_preferences: set[str], b_preferences: set[str]) -> float:
+def _compare_social_preferences(
+    a_preferences: set[str], b_preferences: set[str]
+) -> float:
     if not a_preferences and not b_preferences:
         return 100.0
     if not a_preferences or not b_preferences:
@@ -420,11 +522,18 @@ def _compare_social_preferences(a_preferences: set[str], b_preferences: set[str]
     return (overlap / total) * 100.0
 
 
-def _extract_availability_slots(profile: Mapping[str, Any]) -> list[tuple[str, int, int]]:
+def _extract_availability_slots(
+    profile: Mapping[str, Any],
+) -> list[tuple[str, int, int]]:
     slots: list[tuple[str, int, int]] = []
     for entry in _as_list(profile.get("availability")):
         if isinstance(entry, Mapping):
-            day = DAY_NAMES.get(_normalize_name(entry.get("day_of_week") or entry.get("day") or entry.get("weekday")), "")
+            day = DAY_NAMES.get(
+                _normalize_name(
+                    entry.get("day_of_week") or entry.get("day") or entry.get("weekday")
+                ),
+                "",
+            )
             start = _parse_time(entry.get("start_time") or entry.get("start"))
             end = _parse_time(entry.get("end_time") or entry.get("end"))
             if day and start is not None and end is not None:

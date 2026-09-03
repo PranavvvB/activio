@@ -2,13 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { --font-sans: "DM Sans", sans-serif; --font-display: "Plus Jakarta Sans", sans-serif; }
-* { box-sizing: border-box; }
-body { margin: 0; background: #fcfaf6; color: #25233b; font-family: var(--font-sans); }
-input { width: 100%; border: 1px solid rgba(37, 35, 59, .14); border-radius: .9rem; background: #fffdfa; padding: .8rem 1rem; color: #25233b; outline: none; }
-input:focus { border-color: #ef765f; box-shadow: 0 0 0 3px rgba(239, 118, 95, .16); }
-input[aria-invalid="true"] { border-color: #dc2626; }
+:root {
+  --font-sans: "DM Sans", sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #fcfaf6;
+  color: #25233b;
+  font-family: var(--font-sans);
+}
+input {
+  width: 100%;
+  border: 1px solid rgba(37, 35, 59, 0.14);
+  border-radius: 0.9rem;
+  background: #fffdfa;
+  padding: 0.8rem 1rem;
+  color: #25233b;
+  outline: none;
+}
+input:focus {
+  border-color: #ef765f;
+  box-shadow: 0 0 0 3px rgba(239, 118, 95, 0.16);
+}
+input[aria-invalid="true"] {
+  border-color: #dc2626;
+}
 @layer utilities {
-  .text-balance { text-wrap: balance; }
-  .grid-dots { background-image: radial-gradient(#d7d4f5 1px, transparent 1px); background-size: 18px 18px; }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .grid-dots {
+    background-image: radial-gradient(#d7d4f5 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
 }

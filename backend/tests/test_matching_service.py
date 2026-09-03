@@ -13,14 +13,18 @@ def make_profile(
     social_preferences=("friendly", "competitive"),
 ):
     if activities is None:
-        activities = [{
-            "name": "tennis",
-            "skill_level": "intermediate",
-            "intensity": "competitive",
-            "social_preferences": ["friendly", "competitive"],
-        }]
+        activities = [
+            {
+                "name": "tennis",
+                "skill_level": "intermediate",
+                "intensity": "competitive",
+                "social_preferences": ["friendly", "competitive"],
+            }
+        ]
     if availability is None:
-        availability = [{"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}]
+        availability = [
+            {"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}
+        ]
 
     return {
         "activities": activities,
@@ -49,8 +53,12 @@ def test_perfect_match() -> None:
 
 def test_completely_incompatible_users() -> None:
     profile_a = make_profile(
-        activities=[{"name": "tennis", "skill_level": "beginner", "intensity": "casual"}],
-        availability=[{"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}],
+        activities=[
+            {"name": "tennis", "skill_level": "beginner", "intensity": "casual"}
+        ],
+        availability=[
+            {"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}
+        ],
         latitude=51.5074,
         longitude=-0.1278,
         intensity="casual",
@@ -58,7 +66,9 @@ def test_completely_incompatible_users() -> None:
     )
     profile_b = make_profile(
         activities=[{"name": "golf", "skill_level": "expert", "intensity": "serious"}],
-        availability=[{"day_of_week": "tuesday", "start_time": "18:00", "end_time": "20:00"}],
+        availability=[
+            {"day_of_week": "tuesday", "start_time": "18:00", "end_time": "20:00"}
+        ],
         latitude=40.7128,
         longitude=-74.0060,
         intensity="competitive",
@@ -76,8 +86,16 @@ def test_completely_incompatible_users() -> None:
 
 
 def test_different_skill_levels() -> None:
-    profile_a = make_profile(activities=[{"name": "tennis", "skill_level": "advanced", "intensity": "competitive"}])
-    profile_b = make_profile(activities=[{"name": "tennis", "skill_level": "beginner", "intensity": "competitive"}])
+    profile_a = make_profile(
+        activities=[
+            {"name": "tennis", "skill_level": "advanced", "intensity": "competitive"}
+        ]
+    )
+    profile_b = make_profile(
+        activities=[
+            {"name": "tennis", "skill_level": "beginner", "intensity": "competitive"}
+        ]
+    )
 
     result = calculate_profile_match(profile_a, profile_b)
 
@@ -89,12 +107,28 @@ def test_different_skill_levels() -> None:
 
 def test_no_availability_overlap() -> None:
     profile_a = make_profile(
-        activities=[{"name": "tennis", "skill_level": "intermediate", "intensity": "competitive"}],
-        availability=[{"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}],
+        activities=[
+            {
+                "name": "tennis",
+                "skill_level": "intermediate",
+                "intensity": "competitive",
+            }
+        ],
+        availability=[
+            {"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}
+        ],
     )
     profile_b = make_profile(
-        activities=[{"name": "tennis", "skill_level": "intermediate", "intensity": "competitive"}],
-        availability=[{"day_of_week": "wednesday", "start_time": "18:00", "end_time": "20:00"}],
+        activities=[
+            {
+                "name": "tennis",
+                "skill_level": "intermediate",
+                "intensity": "competitive",
+            }
+        ],
+        availability=[
+            {"day_of_week": "wednesday", "start_time": "18:00", "end_time": "20:00"}
+        ],
     )
 
     result = calculate_profile_match(profile_a, profile_b)
@@ -116,13 +150,21 @@ def test_different_locations() -> None:
 def test_multiple_shared_activities() -> None:
     profile_a = make_profile(
         activities=[
-            {"name": "tennis", "skill_level": "intermediate", "intensity": "competitive"},
+            {
+                "name": "tennis",
+                "skill_level": "intermediate",
+                "intensity": "competitive",
+            },
             {"name": "running", "skill_level": "advanced", "intensity": "balanced"},
         ]
     )
     profile_b = make_profile(
         activities=[
-            {"name": "tennis", "skill_level": "intermediate", "intensity": "competitive"},
+            {
+                "name": "tennis",
+                "skill_level": "intermediate",
+                "intensity": "competitive",
+            },
             {"name": "running", "skill_level": "advanced", "intensity": "balanced"},
             {"name": "swimming", "skill_level": "beginner", "intensity": "casual"},
         ]
@@ -138,12 +180,16 @@ def test_multiple_shared_activities() -> None:
 def test_missing_optional_preferences() -> None:
     profile_a = {
         "activities": [{"name": "tennis", "skill_level": "intermediate"}],
-        "availability": [{"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}],
+        "availability": [
+            {"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}
+        ],
         "location": {"latitude": 51.5074, "longitude": -0.1278},
     }
     profile_b = {
         "activities": [{"name": "tennis", "skill_level": "intermediate"}],
-        "availability": [{"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}],
+        "availability": [
+            {"day_of_week": "monday", "start_time": "18:00", "end_time": "20:00"}
+        ],
         "location": {"latitude": 51.5074, "longitude": -0.1278},
     }
 

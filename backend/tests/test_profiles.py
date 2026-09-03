@@ -47,10 +47,12 @@ def test_profile_fields_are_validated(client) -> None:
         headers={"Authorization": f"Bearer {token}"},
     )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 def test_profile_endpoints_require_authentication(client) -> None:
-    response = client.put("/api/users/me/profile", json={"display_name": "Unauthenticated"})
+    response = client.put(
+        "/api/users/me/profile", json={"display_name": "Unauthenticated"}
+    )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED

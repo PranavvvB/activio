@@ -43,7 +43,9 @@ class UserActivityRead(UserActivityCreate):
 
 
 class AvailabilityEntry(BaseModel):
-    day_of_week: Literal["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    day_of_week: Literal[
+        "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+    ]
     start_time: time
     end_time: time
     notes: str | None = Field(default=None, max_length=255)
